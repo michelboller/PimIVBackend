@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using AuthAPI.Context;
+using Microsoft.OpenApi.Models;
+using AuthAPI.Services;
+using AuthAPI.Business;
 
 namespace AuthAPI
 {
@@ -31,6 +34,14 @@ namespace AuthAPI
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthAPI", Version = "v1" });
+            });
+
+            services.AddScoped<IUserServices, UserBusiness>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
