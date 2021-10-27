@@ -1,4 +1,5 @@
-﻿using AuthAPI.Models;
+﻿using AuthAPI.Controllers.Base;
+using AuthAPI.Models;
 using AuthAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace AuthAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController
+    public class UserController : ApiControllerBase
     {
         private readonly IUserServices _userServices;
 
@@ -29,9 +30,16 @@ namespace AuthAPI.Controllers
         }
 
         [HttpPost("CreateUser")]
-        public async Task<ActionResult<UserToken>> CreateUser([FromBody] UserInfo model)
+        public async Task<IActionResult> CreateUser([FromBody] UserInfo model)
         {
-            return await _userServices.CreateUser(model);
+            try
+            {
+                return Ok(await _userServices.CreateUser(model));
+            }
+            catch (Exception ex)
+            {
+                return ThrowException(ex);
+            }
         }
 
         [HttpPost("LoginUser")]
