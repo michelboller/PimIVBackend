@@ -1,8 +1,10 @@
-﻿using AuthAPI.Controllers.Base;
+﻿using AuthAPI.Context;
+using AuthAPI.Controllers.Base;
 using AuthAPI.Models;
 using AuthAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -16,17 +18,19 @@ namespace AuthAPI.Controllers
     public class UserController : ApiControllerBase
     {
         private readonly IUserServices _userServices;
+        private readonly AppDbContext _context;
 
-        public UserController(IUserServices userServices)
+        public UserController(IUserServices userServices, AppDbContext context)
         {
             _userServices = userServices;
+            _context = context;
         }
 
-
+        //TODO: tirar o retoro dos usuarios
         [HttpGet("")]
-        public ActionResult<string> Get()
+        public async Task<ActionResult<List<ApplicationUser>>> Get()
         {
-            return "Controlador UserController :: AuthApi";
+            return await _context.Users.ToListAsync();
         }
 
         [HttpPost("CreateUser")]
