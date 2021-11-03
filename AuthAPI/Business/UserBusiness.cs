@@ -1,10 +1,12 @@
 ﻿using AuthAPI.Context;
 using AuthAPI.Models;
+using AuthAPI.Models.Dto;
 using AuthAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -35,13 +37,12 @@ namespace AuthAPI.Business
         {
             Guard.Validate(validator =>
             {
-                var modelName = nameof(model.Name);
+                var modelName = nameof(model.Fullname);
                 var modelEmail = nameof(model.Email);
                 var modelPassword = nameof(model.Password);
 
                 validator
-                    .NotNullOrEmptyString(model.Name, modelName, $"{modelName} deve possuir um valor")
-                    //.HasSpaces(model.Name, modelName, $"{modelName} informado não deve possuir espaços em branco")
+                    .NotNullOrEmptyString(model.Fullname, modelName, $"{modelName} deve possuir um valor")
                     .NotNullOrEmptyString(model.Email, modelEmail, $"{modelEmail} deve possuir um valor")
                     .NotNullOrEmptyString(model.Password, modelPassword, $"{modelPassword} deve possuir um valor")
                     .IsValidEmail(model.Email, modelEmail, $"{modelEmail} informado é inválido")
@@ -51,7 +52,7 @@ namespace AuthAPI.Business
                     .PasswordHasSymblos(model.Password, modelPassword, $"{modelPassword} informada não é válida pois está faltando ao menos um caractere simbólico Ex: @")
                     .PasswordHasUpper(model.Password, modelPassword, $"{modelPassword} informada não é válida pois está faltando ao menos um caractere maiúsculo");
             });
-            var user = new ApplicationUser { UserName = model.Name.Replace(" ", ""), Email = model.Email, Fullname = model.Name };
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Fullname = model.Fullname };
             //TODO: Não deixar cadastrar pessoas com o mesmo email
             var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -69,45 +70,27 @@ namespace AuthAPI.Business
                 throw new Exception(messages);
             }
 
-            //if (result.Succeeded)
             return BuildToken(model);
-            //else
-            //{
-            //    var message = string.Empty;
-            //    var errorCount = 1;
-            //    message += "Falha na criação do usuário. Erro(s):\n";
-
-            //    foreach (var erro in result.Errors)
-            //    {
-            //        message += $"{errorCount} - {erro.Code}: {erro.Description}\n";
-            //        errorCount++;
-            //    }
-
-            //    throw new Exception(message);
-            //}
         }
 
-        public async Task<UserToken> LoginUser(UserInfo userInfo)
+        public async Task<UserToken> LoginUser(UserLoginDto userInfo)
         {
-            if (userInfo.Email == null && userInfo.Name == null)
-                throw new Exception($"{nameof(userInfo.Email)} e {nameof(userInfo.Name)} estão sem valores definidos. Por favor arrume e tente novamente!");
+            Guard.Validate(validator =>
+                validator
+                    .NotNullOrEmptyString(userInfo.Email, nameof(userInfo.Email), $"{nameof(userInfo.Email)} está nulo ou sem conteúdo, por favor preencha o campo e tente novamente")
+            );
 
-            if (userInfo.Email == null && string.IsNullOrEmpty(userInfo.Email))
-                userInfo.Email = await _context.Users.Where(x => x.UserName.Equals(userInfo.Name)).Select(x => x.Email).FirstOrDefaultAsync();
-
-            if (userInfo.Name == null && string.IsNullOrEmpty(userInfo.Name))
-                userInfo.Name = await _context.Users.Where(x => x.Email.Equals(userInfo.Email)).Select(x => x.UserName).FirstOrDefaultAsync();
-
-            var result = await _signInManager.PasswordSignInAsync(userInfo.Name.Replace(" ", ""), userInfo.Password, false, false); //dois ultimos parametros: se é persistente o login e se é para travar o login em caso de falha
-
+            var result = await _signInManager.PasswordSignInAsync(userInfo.Email, userInfo.Password, false, false); //dois ultimos parametros: se é persistente o login e se é para travar o login em caso de falha
             if (result.Succeeded)
-                return BuildToken(userInfo);
+                return BuildToken(new UserInfo { Email = userInfo.Email, Password = userInfo.Password });
             else
                 throw new Exception("Login inválido");
         }
 
         private UserToken BuildToken(UserInfo userInfo)
         {
+            var config = _configuration.Get<AppSettings>();
+
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.UniqueName, userInfo.Email),
@@ -115,13 +98,13 @@ namespace AuthAPI.Business
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.JWT.Key));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expirationTime = DateTime.UtcNow.AddHours(1);
 
             JwtSecurityToken token = new JwtSecurityToken(
-                    issuer: null,
-                    audience: null,
+                    issuer: config.JWT.Issuer,
+                    audience: config.JWT.Audience,
                     claims: claims,
                     expires: expirationTime,
                     signingCredentials: cred
@@ -132,6 +115,18 @@ namespace AuthAPI.Business
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = expirationTime
             };
+        }
+
+        internal class Config
+        {
+            public string Key { get; set; }
+            public string Issuer { get; set; }
+            public string Audience { get; set; }
+        }
+
+        internal class AppSettings
+        {
+            public Config JWT { get; set; }
         }
     }
 }

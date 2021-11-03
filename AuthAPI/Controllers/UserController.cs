@@ -1,14 +1,12 @@
 ﻿using AuthAPI.Context;
 using AuthAPI.Controllers.Base;
 using AuthAPI.Models;
+using AuthAPI.Models.Dto;
 using AuthAPI.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AuthAPI.Controllers
@@ -47,7 +45,7 @@ namespace AuthAPI.Controllers
         }
 
         [HttpPost("LoginUser")]
-        public async Task<ActionResult<UserToken>> LoginUser([FromBody] UserInfo userInfo)
+        public async Task<ActionResult<UserToken>> LoginUser([FromBody] UserLoginDto userInfo)
         {
             return await _userServices.LoginUser(userInfo);
         }

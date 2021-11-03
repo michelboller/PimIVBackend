@@ -61,8 +61,10 @@ namespace PimIVBackend
             }).AddJwtBearer(
                 options => options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidIssuer = Configuration["JWT:issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = Configuration["JWT:audience"],
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:key"])),
