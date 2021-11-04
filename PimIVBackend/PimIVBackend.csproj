@@ -21,9 +21,4 @@
     <ProjectReference Include="..\Validator\Validator.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Business\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

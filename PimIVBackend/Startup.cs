@@ -7,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PimIVBackend.Business;
 using PimIVBackend.Models;
+using PimIVBackend.Services;
 using System;
 using System.Text;
 
@@ -75,6 +77,7 @@ namespace PimIVBackend
                         options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             //services.AddScoped<Interface, Business>();
+            services.AddScoped<IEntityGuestServices, EntityGuestBusiness>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

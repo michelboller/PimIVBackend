@@ -148,5 +148,18 @@ namespace Validator
             return this;
         }
 
+        public Guard IsXGratterThanY<T1, T2>(T1 obj1, T2 obj2, string name, string message) where T1 : struct, IComparable, IFormattable,
+                                                                                            IConvertible, IComparable<T1>, IEquatable<T1>
+                                                                                                 where T2 : struct, IComparable, IFormattable,
+                                                                                            IConvertible, IComparable<T2>, IEquatable<T2>
+        {
+            dynamic dynamicObj1 = obj1;
+            dynamic dynamicObj2 = obj2;
+
+            if (dynamicObj1 > dynamicObj2)
+                _validationResults.Add(new GuardResult(name, message));
+
+            return this;
+        }
     }
 }
