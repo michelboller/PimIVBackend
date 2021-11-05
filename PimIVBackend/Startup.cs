@@ -12,6 +12,7 @@ using PimIVBackend.Models;
 using PimIVBackend.Services;
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace PimIVBackend
 {
@@ -25,13 +26,19 @@ namespace PimIVBackend
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        [Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PimIVBackend", Version = "v1" });
+                c.DescribeAllEnumsAsStrings();
 
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
@@ -56,6 +63,7 @@ namespace PimIVBackend
 
             });
 
+
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -78,6 +86,7 @@ namespace PimIVBackend
 
             //services.AddScoped<Interface, Business>();
             services.AddScoped<IEntityGuestServices, EntityGuestBusiness>();
+            services.AddScoped<IEntityCompanyServices, EntityCompanyBusiness>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

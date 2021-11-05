@@ -161,5 +161,15 @@ namespace Validator
 
             return this;
         }
+
+        public Guard IsDifferentOfX(object obj1, object obj2, string name, string message)
+        {
+            if (obj1 != obj2)
+            {
+                _validationResults.Add(new GuardResult(name, message));
+            }
+
+            return this;
+        }
     }
 }

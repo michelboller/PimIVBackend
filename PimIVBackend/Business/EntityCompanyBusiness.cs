@@ -2,42 +2,39 @@
 using PimIVBackend.Models;
 using PimIVBackend.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Validator;
 
 namespace PimIVBackend.Business
 {
-    public class EntityGuestBusiness : IEntityGuestServices
+    public class EntityCompanyBusiness : IEntityCompanyServices
     {
         private readonly AppDbContext _context;
 
-        public EntityGuestBusiness(AppDbContext context)
+        public EntityCompanyBusiness(AppDbContext appDbContext)
         {
-            _context = context;
+            _context = appDbContext;
         }
 
         public async Task ActivateInactivate(int id)
         {
             Guard.Validate(validator =>
                 validator
-                    .NotDefault(id, nameof(id), $"{nameof(id)} não possui um valor definido")
-                    .IsGratterThanZero(id, nameof(id), $"{nameof(id)} possui um valor menor que zero"));
+                    .IsGratterThanZero(id, nameof(id), $"{nameof(id)} está com um valor inválido")
+                    .NotDefault(id, nameof(id), $"{nameof(id)} está com um valor inválido"));
 
-            var entity = await _context.Entities.FirstOrDefaultAsync(x => x.Id == id);
+            var entity = await _context.Entities.OfType<EntityCompany>().FirstOrDefaultAsync(x => x.Id == id);
             entity.Act = !entity.Act;
         }
 
-        public async Task CreateAsync(EntityGuest model)
+        public async Task CreateAsync(EntityCompany model)
         {
-            Guard.Validate(validator => 
+            Guard.Validate(validator =>
                 validator
                     .NotNull(model, nameof(model), $"{nameof(model)} está com valor nulo")
-                    .IsGratterThanZero(model.EntityGender.GetHashCode(), nameof(model.EntityGender), $"{nameof(model.EntityGender)} possiu valor menor que o permitido (zero)")
-                    .IsXGratterThanY(model.EntityGender.GetHashCode(), 2, nameof(model.EntityGender), $"{nameof(model.EntityGender)} possui um valor maior que o permitido (2)") //Caso aumentar o enum mudar aqui
                     .IsXGratterThanY(model.DocType.GetHashCode(), 3, nameof(model.DocType), $"{nameof(model.DocType)} possui um valor maior que o permitido (3)")
-                    .IsXGratterThanY(1, model.DocType.GetHashCode(), nameof(model.DocType), $"{nameof(model.DocType)} possui um valor menor que o permitido (1)")
+                    .IsXGratterThanY(3, model.DocType.GetHashCode(), nameof(model.DocType), $"{nameof(model.DocType)} possui um valor menor que o permitido (3)")
                     .NotNullOrEmptyString(model.Name, nameof(model.Name), $"{nameof(model.Name)} não possui valor ou é uma string em branco")
                     .NotNullOrEmptyString(model.Address, nameof(model.Address), $"{nameof(model.Address)} não possui valor ou é uma string em branco")
                     .NotNullOrEmptyString(model.CEP, nameof(model.CEP), $"{nameof(model.CEP)} não possui valor ou é uma string em branco")
@@ -49,17 +46,13 @@ namespace PimIVBackend.Business
             await _context.Entities.AddAsync(model);
         }
 
-        public async Task UpdateAsync(EntityGuest model)
+        public async Task UpdateAsync(EntityCompany model)
         {
             Guard.Validate(validator =>
                 validator
-                    .NotNull(model.Id, nameof(model.Id), $"{nameof(model.Id)} está com um valor nulo")
-                    .IsGratterThanZero(model.Id, nameof(model.Id), $"{nameof(model.Id)} está com um valor nulo")
                     .NotNull(model, nameof(model), $"{nameof(model)} está com valor nulo")
-                    .IsGratterThanZero(model.EntityGender.GetHashCode(), nameof(model.EntityGender), $"{nameof(model.EntityGender)} possiu valor menor que o permitido (zero)")
-                    .IsXGratterThanY(model.EntityGender.GetHashCode(), 2, nameof(model.EntityGender), $"{nameof(model.EntityGender)} possui um valor maior que o permitido (2)") //Caso aumentar o enum mudar aqui
                     .IsXGratterThanY(model.DocType.GetHashCode(), 3, nameof(model.DocType), $"{nameof(model.DocType)} possui um valor maior que o permitido (3)")
-                    .IsXGratterThanY(1, model.DocType.GetHashCode(), nameof(model.DocType), $"{nameof(model.DocType)} possui um valor menor que o permitido (1)")
+                    .IsXGratterThanY(3, model.DocType.GetHashCode(), nameof(model.DocType), $"{nameof(model.DocType)} possui um valor menor que o permitido (3)")
                     .NotNullOrEmptyString(model.Name, nameof(model.Name), $"{nameof(model.Name)} não possui valor ou é uma string em branco")
                     .NotNullOrEmptyString(model.Address, nameof(model.Address), $"{nameof(model.Address)} não possui valor ou é uma string em branco")
                     .NotNullOrEmptyString(model.CEP, nameof(model.CEP), $"{nameof(model.CEP)} não possui valor ou é uma string em branco")
@@ -67,7 +60,7 @@ namespace PimIVBackend.Business
                     .NotNullOrEmptyString(model.Document, nameof(model.Document), $"{nameof(model.Document)} não possui valor ou é uma string em branco")
                     );
 
-            var entity = await _context.Entities.OfType<EntityGuest>().FirstOrDefaultAsync(x => x.Id == model.Id);
+            var entity = await _context.Entities.FirstOrDefaultAsync(x => x.Id == model.Id);
 
             if (entity != null)
             {
@@ -76,14 +69,13 @@ namespace PimIVBackend.Business
                 entity.Name = model.Name;
                 entity.Phone = model.Phone;
                 entity.Document = model.Document;
-                entity.DocType = model.DocType;
-                entity.EntityGender = model.EntityGender;
                 entity.Act = true;
             }
             else
             {
                 throw new Exception("Referência nula para instância de objeto");
             }
+
         }
     }
 }
