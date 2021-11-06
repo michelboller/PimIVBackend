@@ -7,11 +7,9 @@ namespace PimIVBackend.Models
 {
     public class EntityCompany : Entity
     {
-        public EntityCompany()
+        public EntityCompany(string name, string address, string cEP, string phone, string document, bool act)
+            :base(name, address, cEP, phone, document, EntityDocType.CNPJ, act)
         {
-            DocType = EntityDocType.CNPJ;
         }
-
-        new public EntityDocType DocType { get; }
     }
 }

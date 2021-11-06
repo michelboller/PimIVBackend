@@ -1,7 +1,5 @@
 ﻿using PimIVBackend.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using PimIVBackend.Models.UpdateDto;
 using System.Threading.Tasks;
 
 namespace PimIVBackend.Services
@@ -9,7 +7,7 @@ namespace PimIVBackend.Services
     public interface IEntityGuestServices
     {
         Task CreateAsync(EntityGuest model);
-        Task UpdateAsync(EntityGuest model);
+        Task UpdateAsync(EntityGuestUpdateDto model);
         Task ActivateInactivate(int id);
     }
 }

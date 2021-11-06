@@ -49,16 +49,7 @@ namespace PimIVBackend.Controllers
         {
             try
             {
-                await _entityGuestServices.CreateAsync(new EntityGuest
-                {
-                    Name = model.Name,
-                    Address = model.Address,
-                    CEP = model.CEP,
-                    DocType = model.DocType,
-                    Document = model.Document,
-                    EntityGender = model.Gender,
-                    Phone = model.Phone
-                });
+                await _entityGuestServices.CreateAsync(new EntityGuest(model.Name, model.Address, model.CEP, model.Phone, model.Document, model.DocType, true, model.Gender));
                 await _context.SaveChangesAsync();
                 return Ok();
             }
@@ -74,17 +65,7 @@ namespace PimIVBackend.Controllers
         {
             try
             {
-                await _entityGuestServices.UpdateAsync(new EntityGuest
-                {
-                    Id = model.Id,
-                    Name = model.Name,
-                    Address = model.Address,
-                    CEP = model.CEP,
-                    DocType = model.DocType,
-                    Document = model.Document,
-                    EntityGender = model.Gender,
-                    Phone = model.Phone
-                });
+                await _entityGuestServices.UpdateAsync(model);
                 await _context.SaveChangesAsync();
                 return Ok();
             }
@@ -130,14 +111,7 @@ namespace PimIVBackend.Controllers
         {
             try
             {
-                await _entityCompanyServices.CreateAsync(new EntityCompany
-                {
-                    Address = company.Address,
-                    CEP = company.CEP,
-                    Document = company.Document,
-                    Name = company.Name,
-                    Phone = company.Phone,
-                });
+                await _entityCompanyServices.CreateAsync(new EntityCompany(company.Name, company.Address, company.CEP, company.Phone, company.Document, true));
                 await _context.SaveChangesAsync();
                 return Ok();
             }
@@ -145,8 +119,6 @@ namespace PimIVBackend.Controllers
             {
                 return ThrowException(ex);
             }
-
-
         }
 
         [HttpPut]
@@ -155,15 +127,7 @@ namespace PimIVBackend.Controllers
         {
             try
             {
-                await _entityCompanyServices.UpdateAsync(new EntityCompany
-                {
-                    Id = company.Id,
-                    Address = company.Address,
-                    CEP = company.CEP,
-                    Document = company.Document,
-                    Name = company.Name,
-                    Phone = company.Phone,
-                });
+                await _entityCompanyServices.UpdateAsync(company);
                 await _context.SaveChangesAsync();
                 return Ok();
             }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PimIVBackend.Models;
+using PimIVBackend.Models.UpdateDto;
 using PimIVBackend.Services;
 using System;
 using System.Collections.Generic;
@@ -26,59 +27,38 @@ namespace PimIVBackend.Business
                     .IsGratterThanZero(id, nameof(id), $"{nameof(id)} possui um valor menor que zero"));
 
             var entity = await _context.Entities.FirstOrDefaultAsync(x => x.Id == id);
-            entity.Act = !entity.Act;
+            
+            if(entity != null)
+                entity.ChangeAct(!entity.Act);
         }
 
         public async Task CreateAsync(EntityGuest model)
         {
-            Guard.Validate(validator => 
+            Guard.Validate(validator =>
                 validator
-                    .NotNull(model, nameof(model), $"{nameof(model)} está com valor nulo")
-                    .IsGratterThanZero(model.EntityGender.GetHashCode(), nameof(model.EntityGender), $"{nameof(model.EntityGender)} possiu valor menor que o permitido (zero)")
-                    .IsXGratterThanY(model.EntityGender.GetHashCode(), 2, nameof(model.EntityGender), $"{nameof(model.EntityGender)} possui um valor maior que o permitido (2)") //Caso aumentar o enum mudar aqui
-                    .IsXGratterThanY(model.DocType.GetHashCode(), 3, nameof(model.DocType), $"{nameof(model.DocType)} possui um valor maior que o permitido (3)")
-                    .IsXGratterThanY(1, model.DocType.GetHashCode(), nameof(model.DocType), $"{nameof(model.DocType)} possui um valor menor que o permitido (1)")
-                    .NotNullOrEmptyString(model.Name, nameof(model.Name), $"{nameof(model.Name)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Address, nameof(model.Address), $"{nameof(model.Address)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.CEP, nameof(model.CEP), $"{nameof(model.CEP)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Phone, nameof(model.Phone), $"{nameof(model.Phone)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Document, nameof(model.Document), $"{nameof(model.Document)} não possui valor ou é uma string em branco")
-                    );
+                    .NotNull(model, nameof(model), $"{nameof(model)} está nulo e por isso não foi possível criar uma empresa"));
 
-            model.Act = true;
             await _context.Entities.AddAsync(model);
         }
 
-        public async Task UpdateAsync(EntityGuest model)
+        public async Task UpdateAsync(EntityGuestUpdateDto model)
         {
             Guard.Validate(validator =>
                 validator
-                    .NotNull(model.Id, nameof(model.Id), $"{nameof(model.Id)} está com um valor nulo")
-                    .IsGratterThanZero(model.Id, nameof(model.Id), $"{nameof(model.Id)} está com um valor nulo")
-                    .NotNull(model, nameof(model), $"{nameof(model)} está com valor nulo")
-                    .IsGratterThanZero(model.EntityGender.GetHashCode(), nameof(model.EntityGender), $"{nameof(model.EntityGender)} possiu valor menor que o permitido (zero)")
-                    .IsXGratterThanY(model.EntityGender.GetHashCode(), 2, nameof(model.EntityGender), $"{nameof(model.EntityGender)} possui um valor maior que o permitido (2)") //Caso aumentar o enum mudar aqui
-                    .IsXGratterThanY(model.DocType.GetHashCode(), 3, nameof(model.DocType), $"{nameof(model.DocType)} possui um valor maior que o permitido (3)")
-                    .IsXGratterThanY(1, model.DocType.GetHashCode(), nameof(model.DocType), $"{nameof(model.DocType)} possui um valor menor que o permitido (1)")
-                    .NotNullOrEmptyString(model.Name, nameof(model.Name), $"{nameof(model.Name)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Address, nameof(model.Address), $"{nameof(model.Address)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.CEP, nameof(model.CEP), $"{nameof(model.CEP)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Phone, nameof(model.Phone), $"{nameof(model.Phone)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Document, nameof(model.Document), $"{nameof(model.Document)} não possui valor ou é uma string em branco")
-                    );
+                    .NotDefault(model.Id, nameof(model.Id), $"{nameof(model.Id)} não possui um valor definido")
+                    .IsGratterThanZero(model.Id, nameof(model.Id), $"{nameof(model.Id)} possui um valor menor que zero"));
 
             var entity = await _context.Entities.OfType<EntityGuest>().FirstOrDefaultAsync(x => x.Id == model.Id);
 
             if (entity != null)
             {
-                entity.Address = model.Address;
-                entity.CEP = model.CEP;
-                entity.Name = model.Name;
-                entity.Phone = model.Phone;
-                entity.Document = model.Document;
-                entity.DocType = model.DocType;
-                entity.EntityGender = model.EntityGender;
-                entity.Act = true;
+                entity.ChangeAddress(model.Address);
+                entity.ChangeCEP(model.CEP);
+                entity.ChangeName(model.Name);
+                entity.ChangePhone(model.Phone);
+                entity.ChangeDocument(model.Document);
+                entity.ChangeDocType(model.DocType);
+                entity.ChangeGender(model.Gender);
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PimIVBackend.Models;
+using PimIVBackend.Models.UpdateDto;
 using PimIVBackend.Services;
 using System;
 using System.Linq;
@@ -25,57 +26,41 @@ namespace PimIVBackend.Business
                     .NotDefault(id, nameof(id), $"{nameof(id)} está com um valor inválido"));
 
             var entity = await _context.Entities.OfType<EntityCompany>().FirstOrDefaultAsync(x => x.Id == id);
-            entity.Act = !entity.Act;
+
+            if(entity != null)
+                entity.ChangeAct(!entity.Act);
         }
 
         public async Task CreateAsync(EntityCompany model)
         {
             Guard.Validate(validator =>
                 validator
-                    .NotNull(model, nameof(model), $"{nameof(model)} está com valor nulo")
-                    .IsXGratterThanY(model.DocType.GetHashCode(), 3, nameof(model.DocType), $"{nameof(model.DocType)} possui um valor maior que o permitido (3)")
-                    .IsXGratterThanY(3, model.DocType.GetHashCode(), nameof(model.DocType), $"{nameof(model.DocType)} possui um valor menor que o permitido (3)")
-                    .NotNullOrEmptyString(model.Name, nameof(model.Name), $"{nameof(model.Name)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Address, nameof(model.Address), $"{nameof(model.Address)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.CEP, nameof(model.CEP), $"{nameof(model.CEP)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Phone, nameof(model.Phone), $"{nameof(model.Phone)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Document, nameof(model.Document), $"{nameof(model.Document)} não possui valor ou é uma string em branco")
-                    );
+                    .NotNull(model, nameof(model), $"{nameof(model)} está nulo e por isso não foi possível criar uma empresa"));
 
-            model.Act = true;
             await _context.Entities.AddAsync(model);
         }
 
-        public async Task UpdateAsync(EntityCompany model)
+        public async Task UpdateAsync(EntityCompanyUpdateDto model)
         {
             Guard.Validate(validator =>
                 validator
-                    .NotNull(model, nameof(model), $"{nameof(model)} está com valor nulo")
-                    .IsXGratterThanY(model.DocType.GetHashCode(), 3, nameof(model.DocType), $"{nameof(model.DocType)} possui um valor maior que o permitido (3)")
-                    .IsXGratterThanY(3, model.DocType.GetHashCode(), nameof(model.DocType), $"{nameof(model.DocType)} possui um valor menor que o permitido (3)")
-                    .NotNullOrEmptyString(model.Name, nameof(model.Name), $"{nameof(model.Name)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Address, nameof(model.Address), $"{nameof(model.Address)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.CEP, nameof(model.CEP), $"{nameof(model.CEP)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Phone, nameof(model.Phone), $"{nameof(model.Phone)} não possui valor ou é uma string em branco")
-                    .NotNullOrEmptyString(model.Document, nameof(model.Document), $"{nameof(model.Document)} não possui valor ou é uma string em branco")
-                    );
+                    .IsGratterThanZero(model.Id, nameof(model.Id), $"{nameof(model.Id)} está com um valor inválido")
+                    .NotDefault(model.Id, nameof(model.Id), $"{nameof(model.Id)} está com um valor inválido"));
 
             var entity = await _context.Entities.FirstOrDefaultAsync(x => x.Id == model.Id);
 
             if (entity != null)
             {
-                entity.Address = model.Address;
-                entity.CEP = model.CEP;
-                entity.Name = model.Name;
-                entity.Phone = model.Phone;
-                entity.Document = model.Document;
-                entity.Act = true;
+                entity.ChangeAddress(model.Address);
+                entity.ChangeCEP(model.CEP);
+                entity.ChangeName(model.Name);
+                entity.ChangePhone(model.Phone);
+                entity.ChangeDocument(model.Document);
             }
             else
             {
                 throw new Exception("Referência nula para instância de objeto");
             }
-
         }
     }
 }
