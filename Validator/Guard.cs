@@ -71,6 +71,15 @@ namespace Validator
             return this;
         }
 
+        public Guard IsNotNullAndNotEmpty<T>(IEnumerable<T> list, string name, string message) where T : struct, IComparable, IFormattable,
+                                                                                            IConvertible, IComparable<T>, IEquatable<T>
+        {
+            if (list == null || !list.Any())
+                _validationResults.Add(new GuardResult(name, message));
+
+            return this;
+        }
+
         /// <summary>
         /// Used ONLY for numbers
         /// </summary>
@@ -85,6 +94,17 @@ namespace Validator
             dynamic dynamicObj = obj;
 
             if (dynamicObj < 0)
+                _validationResults.Add(new GuardResult(name, message));
+
+            return this;
+        }
+
+        public Guard IsGratterThanZeroAndPositive<T>(T obj, string name, string message) where T : struct, IComparable, IFormattable,
+                                                                                            IConvertible, IComparable<T>, IEquatable<T>
+        {
+            dynamic dynamicObj = obj;
+
+            if (dynamicObj <= 0)
                 _validationResults.Add(new GuardResult(name, message));
 
             return this;
@@ -165,9 +185,24 @@ namespace Validator
         public Guard IsDifferentOfX(object obj1, object obj2, string name, string message)
         {
             if (obj1 != obj2)
-            {
                 _validationResults.Add(new GuardResult(name, message));
-            }
+
+
+            return this;
+        }
+
+        public Guard IsGratterThanOrEqualsToToday(DateTime date, string name, string message)
+        {
+            if (date < DateTime.Now)
+                _validationResults.Add(new GuardResult(name, message));
+
+            return this;
+        }
+
+        public Guard IsXDateGratterThanYDate(DateTime start, DateTime end, string name, string message)
+        {
+            if (end > start)
+                _validationResults.Add(new GuardResult(name, message));
 
             return this;
         }

@@ -42,7 +42,6 @@ namespace PimIVBackend.Controllers
             return await _context.Entities.OfType<EntityGuest>().FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        //TODO: Arrumar o model de entrada para ter os campos certos para todos os metodos que recebem um EntutyGuest como entrada
         [HttpPost]
         [Route("Guest")]
         public async Task<IActionResult> CreateGuestAsync(EntityGuestCreateDto model)

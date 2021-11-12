@@ -53,5 +53,7 @@ namespace PimIVBackend.Models
         }
 
         public DbSet<Entity> Entities { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Room> Rooms { get; set; }
     }
 }

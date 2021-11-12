@@ -87,6 +87,8 @@ namespace PimIVBackend
             //services.AddScoped<Interface, Business>();
             services.AddScoped<IEntityGuestServices, EntityGuestBusiness>();
             services.AddScoped<IEntityCompanyServices, EntityCompanyBusiness>();
+            services.AddScoped<IProductServices, ProductBusiness>();
+            services.AddScoped<IRoomServices, RoomBusiness>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
