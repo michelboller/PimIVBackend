@@ -94,7 +94,7 @@ namespace PimIVBackend.Models
                 validator
                     .NotNull(guest, nameof(guest), $"{nameof(guest)} é uma referência para um objeto nulo")
                     );
-            if(Guests.Contains(guest))
+            if (Guests.Contains(guest))
                 Guests.Remove(guest);
         }
 
@@ -108,6 +108,36 @@ namespace PimIVBackend.Models
             //verificar se o quarto está disponivel (business)
 
             Room = room;
+        }
+
+        public void AddCompany(EntityCompany company)
+        {
+            Guard.Validate(validator =>
+                validator
+                    .NotNull(company, nameof(company), $"{nameof(company)} é uma referência para um objeto nulo")
+                    );
+
+            if (EntityCompany == null && EntityCompanyId == null)
+                EntityCompany = company;
+        }
+
+        public void ChangeCompany(EntityCompany company)
+        {
+            Guard.Validate(validator =>
+                validator
+                    .NotNull(company, nameof(company), $"{nameof(company)} é uma referência para um objeto nulo")
+                    );
+
+            EntityCompany = company;
+        }
+
+        public void RemoveCompany()
+        {
+            if (EntityCompany != null && EntityCompanyId != null)
+            {
+                EntityCompany = null;
+                EntityCompanyId = null;
+            }
         }
     }
 }

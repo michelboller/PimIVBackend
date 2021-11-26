@@ -20,6 +20,25 @@ namespace PimIVBackend.Business
             _context = context;
         }
 
+        public async Task AddCompany(int reservationId, int companyId)
+        {
+            Guard.Validate(validator =>
+                validator
+                    .NotDefault(reservationId, nameof(reservationId), $"{nameof(reservationId)} está com um valor inválido")
+                    .IsGratterThanZeroAndPositive(reservationId, nameof(reservationId), $"{nameof(reservationId)} está com um valor inválido")
+                    .NotDefault(companyId, nameof(companyId), $"{nameof(companyId)} está com um valor inválido")
+                    .IsGratterThanZeroAndPositive(companyId, nameof(companyId), $"{nameof(companyId)} está com um valor inválido"));
+
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(x => x.Id == reservationId);
+            var company = await _context.Entities.OfType<EntityCompany>().FirstOrDefaultAsync(x => x.Id == companyId);
+
+            if(reservation != null)
+            {
+                if (company != null && reservation.EntityCompanyId == null && reservation.EntityCompany == null)
+                    reservation.AddCompany(company);
+            }
+        }
+
         public async Task AddGuest(int reservationId, int guestId)
         {
             Guard.Validate(validator =>
@@ -36,6 +55,25 @@ namespace PimIVBackend.Business
             {
                 if (guest != null && !reservation.Guests.Contains(guest))
                     reservation.AddGuests(guest);
+            }
+        }
+
+        public async Task ChangeCompany(int reservationId, int companyId)
+        {
+            Guard.Validate(validator =>
+                validator
+                    .NotDefault(reservationId, nameof(reservationId), $"{nameof(reservationId)} está com um valor inválido")
+                    .IsGratterThanZeroAndPositive(reservationId, nameof(reservationId), $"{nameof(reservationId)} está com um valor inválido")
+                    .NotDefault(companyId, nameof(companyId), $"{nameof(companyId)} está com um valor inválido")
+                    .IsGratterThanZeroAndPositive(companyId, nameof(companyId), $"{nameof(companyId)} está com um valor inválido"));
+
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(x => x.Id == reservationId);
+            var company = await _context.Entities.OfType<EntityCompany>().FirstOrDefaultAsync(x => x.Id == companyId);
+
+            if (reservation != null)
+            {
+                if (company != null && reservation.EntityCompanyId != company.Id)
+                    reservation.ChangeCompany(company);
             }
         }
 
@@ -79,6 +117,22 @@ namespace PimIVBackend.Business
                 throw new Exception("Algo deu errado! Verifique os dados enviados");
 
 
+        }
+
+        public async Task RemoveCompany(int reservationId)
+        {
+            Guard.Validate(validator =>
+                validator
+                    .NotDefault(reservationId, nameof(reservationId), $"{nameof(reservationId)} está com um valor inválido")
+                    .IsGratterThanZeroAndPositive(reservationId, nameof(reservationId), $"{nameof(reservationId)} está com um valor inválido"));
+
+            var reservation = await _context.Reservations.Include(x => x.EntityCompany).FirstOrDefaultAsync(x => x.Id == reservationId);
+
+            if (reservation != null)
+            {
+                if (reservation.EntityCompanyId != null && reservation.EntityCompany != null)
+                    reservation.RemoveCompany();
+            }
         }
 
         public async Task RemoveGuest(int reservationId, int guestId)

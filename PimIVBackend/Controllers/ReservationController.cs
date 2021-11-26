@@ -134,5 +134,53 @@ namespace PimIVBackend.Controllers
                 return ThrowException(e);
             }
         }
+
+        [HttpPatch]
+        [Route("AddCompany/{reservationId}/{companyId}")]
+        public async Task<IActionResult> AddCompany(int reservationId, int companyId)
+        {
+            try
+            {
+                await _reservationService.AddCompany(reservationId, companyId);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch(Exception e)
+            {
+                return ThrowException(e);
+            }
+        }
+
+        [HttpPatch]
+        [Route("ChangeCompany/{reservationId}/{companyId}")]
+        public async Task<IActionResult> ChangeCompany(int reservationId, int companyId)
+        {
+            try
+            {
+                await _reservationService.ChangeCompany(reservationId, companyId);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return ThrowException(e);
+            }
+        }
+
+        [HttpPatch]
+        [Route("RemoveCompany/{reservationId}")]
+        public async Task<IActionResult> RemoveCompany(int reservationId)
+        {
+            try
+            {
+                await _reservationService.RemoveCompany(reservationId);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return ThrowException(e);
+            }
+        }
     }
 }
