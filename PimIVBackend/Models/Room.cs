@@ -26,7 +26,7 @@ namespace PimIVBackend.Models
 #nullable disable
         public decimal Price { get; private set; }
         public int Size { get; private set; } //The amount of people
-        public bool Act { get; set; }
+        public bool Act { get; private set; }
 
         public void ChangePrice(decimal price)
         {

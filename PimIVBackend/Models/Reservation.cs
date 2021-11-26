@@ -7,6 +7,11 @@ namespace PimIVBackend.Models
 {
     public class Reservation : ModelBase
     {
+        public Reservation()
+        {
+
+        }
+
         public Reservation(DateTime startDate, DateTime endDate, EntityGuest mainGuest, List<EntityGuest> guests, EntityCompany entityCompany, Room room)
         {
             Guard.Validate(validate =>
@@ -63,16 +68,13 @@ namespace PimIVBackend.Models
             EndDate = date;
         }
 
-        public void ChangeMainGuest(int mainGuestId, EntityGuest mainGuest)
+        public void ChangeMainGuest(EntityGuest mainGuest)
         {
             Guard.Validate(validator =>
                 validator
-                    .NotDefault(mainGuestId, nameof(mainGuestId), $"{nameof(mainGuestId)} possui um valor inválido")
-                    .IsGratterThanZeroAndPositive(mainGuestId, nameof(mainGuestId), $"{nameof(mainGuestId)} possui um valor menor ou igual a zero")
                     .NotNull(mainGuest, nameof(mainGuest), $"{nameof(mainGuest)} é uma referência para um objeto nulo")
                     );
 
-            MainGuestId = mainGuestId;
             MainGuest = mainGuest;
         }
 
@@ -86,18 +88,25 @@ namespace PimIVBackend.Models
             Guests.Add(guest);
         }
 
-        public void ChangeRoom(int roomId, Room room)
+        public void RemoveGuest(EntityGuest guest)
         {
             Guard.Validate(validator =>
                 validator
-                    .NotDefault(roomId, nameof(roomId), $"{nameof(roomId)} possui um valor inválido")
-                    .IsGratterThanZeroAndPositive(roomId, nameof(roomId), $"{nameof(roomId)} possui um valor menor ou igual a zero")
+                    .NotNull(guest, nameof(guest), $"{nameof(guest)} é uma referência para um objeto nulo")
+                    );
+            if(Guests.Contains(guest))
+                Guests.Remove(guest);
+        }
+
+        public void ChangeRoom(Room room)
+        {
+            Guard.Validate(validator =>
+                validator
                     .NotNull(room, nameof(room), $"{nameof(room)} é uma referência para um objeto nulo")
                     );
 
             //verificar se o quarto está disponivel (business)
 
-            RoomId = roomId;
             Room = room;
         }
     }

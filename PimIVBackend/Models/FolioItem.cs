@@ -5,6 +5,11 @@ namespace PimIVBackend.Models
 {
     public class FolioItem : ModelBase
     {
+        public FolioItem()
+        {
+
+        }
+
         public FolioItem(Product product, EntityGuest entityGuest, int quantity)
         {
             Guard.Validate(validate =>
