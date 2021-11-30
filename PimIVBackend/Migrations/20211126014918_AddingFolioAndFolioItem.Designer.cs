@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PimIVBackend.Models;
 
 namespace PimIVBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211126014918_AddingFolioAndFolioItem")]
+    partial class AddingFolioAndFolioItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,6 +53,9 @@ namespace PimIVBackend.Migrations
                     b.Property<string>("Document")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("FolioId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -58,6 +63,8 @@ namespace PimIVBackend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FolioId");
 
                     b.ToTable("Entity");
 
@@ -90,34 +97,6 @@ namespace PimIVBackend.Migrations
                     b.ToTable("Folios");
                 });
 
-            modelBuilder.Entity("PimIVBackend.Models.FolioEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("DateAdd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateUp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EntityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FolioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EntityId");
-
-                    b.HasIndex("FolioId");
-
-                    b.ToTable("FolioEntity");
-                });
-
             modelBuilder.Entity("PimIVBackend.Models.FolioItem", b =>
                 {
                     b.Property<int>("Id")
@@ -140,8 +119,8 @@ namespace PimIVBackend.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalValue")
                         .HasColumnType("decimal(18,2)");
@@ -285,6 +264,13 @@ namespace PimIVBackend.Migrations
                     b.HasDiscriminator().HasValue("EntityGuest");
                 });
 
+            modelBuilder.Entity("PimIVBackend.Models.Entity", b =>
+                {
+                    b.HasOne("PimIVBackend.Models.Folio", null)
+                        .WithMany("Entities")
+                        .HasForeignKey("FolioId");
+                });
+
             modelBuilder.Entity("PimIVBackend.Models.Folio", b =>
                 {
                     b.HasOne("PimIVBackend.Models.Reservation", "Reservation")
@@ -292,23 +278,6 @@ namespace PimIVBackend.Migrations
                         .HasForeignKey("ReservationId");
 
                     b.Navigation("Reservation");
-                });
-
-            modelBuilder.Entity("PimIVBackend.Models.FolioEntity", b =>
-                {
-                    b.HasOne("PimIVBackend.Models.Entity", "Entity")
-                        .WithMany()
-                        .HasForeignKey("EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PimIVBackend.Models.Folio", null)
-                        .WithMany("Entities")
-                        .HasForeignKey("FolioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Entity");
                 });
 
             modelBuilder.Entity("PimIVBackend.Models.FolioItem", b =>

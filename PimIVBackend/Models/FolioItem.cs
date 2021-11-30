@@ -10,7 +10,7 @@ namespace PimIVBackend.Models
 
         }
 
-        public FolioItem(Product product, EntityGuest entityGuest, int quantity)
+        public FolioItem(Product product, EntityGuest entityGuest, decimal quantity)
         {
             Guard.Validate(validate =>
                 validate
@@ -23,7 +23,7 @@ namespace PimIVBackend.Models
                     );
 
             Product = product;
-            EntityGuest = entityGuest;
+            EntityGuestId = entityGuest.Id;
             Quantity = quantity;
             UnitValue = product.Price;
             TotalValue = product.Price * quantity;
@@ -33,8 +33,7 @@ namespace PimIVBackend.Models
         public int ProductId { get; private set; }
         public virtual Product Product { get; private set; }
         public int EntityGuestId { get; private set; }
-        public virtual EntityGuest EntityGuest { get; private set; }
-        public int Quantity { get; private set; }
+        public decimal Quantity { get; private set; }
         public decimal UnitValue { get; private set; }
         public decimal TotalValue { get; private set; }
 

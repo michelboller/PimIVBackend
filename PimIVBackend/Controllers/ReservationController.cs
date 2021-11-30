@@ -84,6 +84,21 @@ namespace PimIVBackend.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("DoCheckIn/{reservationId}")]
+        public async Task<IActionResult> DoCheckin(int reservationId)
+        {
+            try
+            {
+                await _reservationService.DoCheckin(reservationId);
+                await _context.SaveChangesAsync();
+                return Ok();
+            } catch (Exception e)
+            {
+                return ThrowException(e);
+            }
+        }
+
         [HttpPatch]
         [Route("AddGuests/{reservationId}/{guestId}")]
         public async Task<IActionResult> AddGuests(int reservationId, int guestId)

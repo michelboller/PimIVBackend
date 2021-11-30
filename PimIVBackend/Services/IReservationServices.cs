@@ -14,5 +14,6 @@ namespace PimIVBackend.Services
         public Task AddCompany(int reservationId, int companyId);
         public Task ChangeCompany(int reservationId, int companyId);
         public Task RemoveCompany(int reservationId);
+        public Task DoCheckin(int reservationId);
     }
 }

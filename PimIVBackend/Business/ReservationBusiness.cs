@@ -119,6 +119,25 @@ namespace PimIVBackend.Business
 
         }
 
+        public async Task DoCheckin(int reservationId)
+        {
+            Guard.Validate(validator =>
+                validator
+                    .NotDefault(reservationId, nameof(reservationId), $"{nameof(reservationId)} está com um valor inválido")
+                    .IsGratterThanZeroAndPositive(reservationId, nameof(reservationId), $"{nameof(reservationId)} está com um valor inválido"));
+
+            var reservation = await _context
+                                        .Reservations
+                                        .Include(x => x.Guests)
+                                        .FirstOrDefaultAsync(x => x.Id == reservationId);
+
+            if (reservation != null)
+            {
+                var folio = reservation.DoCheckIn(reservation);
+                _context.Folios.Add(folio);
+            }
+        }
+
         public async Task RemoveCompany(int reservationId)
         {
             Guard.Validate(validator =>

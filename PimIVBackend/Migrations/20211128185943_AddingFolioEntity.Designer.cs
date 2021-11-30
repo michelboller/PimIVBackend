@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PimIVBackend.Models;
 
 namespace PimIVBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211128185943_AddingFolioEntity")]
+    partial class AddingFolioEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,8 +142,8 @@ namespace PimIVBackend.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalValue")
                         .HasColumnType("decimal(18,2)");
@@ -302,13 +304,15 @@ namespace PimIVBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PimIVBackend.Models.Folio", null)
+                    b.HasOne("PimIVBackend.Models.Folio", "Folio")
                         .WithMany("Entities")
                         .HasForeignKey("FolioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Entity");
+
+                    b.Navigation("Folio");
                 });
 
             modelBuilder.Entity("PimIVBackend.Models.FolioItem", b =>

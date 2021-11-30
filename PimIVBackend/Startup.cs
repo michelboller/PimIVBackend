@@ -33,6 +33,7 @@ namespace PimIVBackend
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                //options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
             });
 
             services.AddSwaggerGen(c =>
@@ -90,6 +91,7 @@ namespace PimIVBackend
             services.AddScoped<IProductServices, ProductBusiness>();
             services.AddScoped<IRoomServices, RoomBusiness>();
             services.AddScoped<IReservationServices, ReservationBusiness>();
+            services.AddScoped<IFolioServices, FolioBusiness>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

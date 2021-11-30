@@ -40,7 +40,7 @@ namespace PimIVBackend.Models
         public virtual EntityGuest MainGuest { get; private set; }
         public List<EntityGuest> Guests { get; private set; }
         public int? EntityCompanyId { get; private set; }
-        public virtual EntityCompany? EntityCompany { get; private set; }
+        public virtual EntityCompany EntityCompany { get; private set; }
         public int RoomId { get; private set; }
         public virtual Room Room { get; private set; }
 
@@ -138,6 +138,17 @@ namespace PimIVBackend.Models
                 EntityCompany = null;
                 EntityCompanyId = null;
             }
+        }
+
+        public Folio DoCheckIn(Reservation reservation)
+        {
+            Guard.Validate(validator =>
+                validator
+                    .NotNull(reservation, nameof(reservation), $"{nameof(reservation)} é uma referência para um objeto nulo")
+                    );
+
+            var folio = new Folio(reservation);
+            return folio;
         }
     }
 }
