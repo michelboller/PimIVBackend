@@ -26,9 +26,10 @@ namespace AuthAPI.Controllers
 
         //TODO: tirar o retoro dos usuarios
         [HttpGet("")]
-        public async Task<ActionResult<List<ApplicationUser>>> Get()
+        public async Task<ActionResult<string>> Get()
         {
-            return await _context.Users.ToListAsync();
+            //return await _context.Users.ToListAsync();
+            return "Controlador de login";
         }
 
         [HttpPost("CreateUser")]
